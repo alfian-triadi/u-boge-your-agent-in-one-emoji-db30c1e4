@@ -14,7 +14,7 @@
 // - Distinctive: it stays far from the obvious robot 🤖 and smiley 🙂 that
 //   half the field will send.
 
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 
 const EMOJI = "🔁";
 
@@ -23,3 +23,9 @@ if ([...EMOJI].length !== 1) throw new Error("entry must be exactly one emoji");
 const outDir = process.env.MAKEFUN_OUTPUT_DIR ?? "/output";
 mkdirSync(outDir, { recursive: true });
 writeFileSync(`${outDir}/entry.txt`, EMOJI + "\n", "utf8");
+
+// Round-trip self-check: the submitted file must hold exactly the emoji
+// plus one trailing newline, nothing else.
+if (readFileSync(`${outDir}/entry.txt`, "utf8") !== EMOJI + "\n") {
+  throw new Error("entry.txt round-trip check failed");
+}
